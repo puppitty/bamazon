@@ -1,5 +1,3 @@
-/* PSUEDOCODE */
-
 /* Require MySQL & Inquirer */
 var inquirer = require("inquirer");
 var mysql = require("mysql");
@@ -24,14 +22,55 @@ connection.connect(function (err) {
   start();
 });
 
-// Print out inventory
+// Manager version shows options with Switch / Case solutions for
+// View Products for Sale
+// View Low Inventory
+// Add to inventory
+// Add New Product
 function start() {
+  inquirer
+    .prompt({
+      name: "action",
+      type: "list",
+      message: "What would you like to do?",
+      choices: [
+        "View Products for Sale",
+        "View Low Inventory",
+        "Add to Inventory",
+        "Add New Product"
+      ]
+    })
+    .then(function(answer) {
+      switch (answer.action) {
+      case "View Products for Sale":
+        viewInv();
+        break;
+
+      case "View Low Inventory":
+        lowInv();
+        break;
+
+      case "Add to Inventory":
+        addQty();
+        break;
+
+      case "Add New Product":
+        newProduct();
+        break;
+      }
+    });
+}
+
+// View Inventory Function
+function viewInv() {
   connection.query("SELECT * FROM bamazon_db.products;", function (err, res) {
     if (err) throw err;
     console.log(res);
     prompt();
   });
 }
+
+// Rest of code needs updating
 
 function prompt() {
   inquirer
@@ -57,5 +96,4 @@ function prompt() {
       });
     });
 }
-
 
