@@ -48,6 +48,7 @@ function start() {
 
       case "View Low Inventory":
         lowInv();
+        
         break;
 
       case "Add to Inventory":
@@ -68,32 +69,69 @@ function viewInv() {
     console.log(res);
     prompt();
   });
+};
+
+// Display Low Inventory items
+// SELECT * FROM bamazon_db.products WHERE stock_qty <10;
+// Needs to list all items with inventory count lower than 5
+function lowInv() {
+connection.query("SELECT * FROM bamazon_db.products WHERE parse.int(stock_qty) <10", function (err, res) {
+  if (err) throw err;
+  console.log(res);
+  prompt();
+});
 }
+
+// Add Quantity (Needs to be updated)
+// Request item #
+// Prompt additional quantity
+// update database with new quantity (Look at ice cream app)
+function addQty() {
+  connection.query("SELECT * FROM bamazon_db.products;", function (err, res) {
+    if (err) throw err;
+    console.log(res);
+    prompt();
+  });
+};
+
+// Add New item (Needs to be updated)
+// Request item #
+// Prompt for name of product
+// Prompt for Department
+// Prompt for inventory
+// update database with new product (Look at ice cream app)
+function newProduct() {
+  connection.query("SELECT * FROM bamazon_db.products;", function (err, res) {
+    if (err) throw err;
+    console.log(res);
+    prompt();
+  });
+};
 
 // Rest of code needs updating
 
-function prompt() {
-  inquirer
-    .prompt([{
-      name: "inputID",
-      type: "input",
-      message: "Please enter the Item ID"
-    },
-    {
-      name: "quantity",
-      type: "input",
-      message: "How many units would you like to buy?"
-    },
-    ])
-    // Then needs to be updated to compare requested quantity against available quantity. If yes, place order, show custoemr total cost. if not send message "Insufficient quantity"
-    .then(function(answer) {
-      var query = "SELECT position, song, year FROM top5000 WHERE ?";
-      connection.query(query, { artist: answer.artist }, function(err, res) {
-        for (var i = 0; i < res.length; i++) {
-          console.log("Position: " + res[i].position + " || Song: " + res[i].song + " || Year: " + res[i].year);
-        }
-        runSearch();
-      });
-    });
-}
+// function prompt() {
+//   inquirer
+//     .prompt([{
+//       name: "inputID",
+//       type: "input",
+//       message: "Please enter the Item ID"
+//     },
+//     {
+//       name: "quantity",
+//       type: "input",
+//       message: "How many units would you like to buy?"
+//     },
+//     ])
+//     // Then needs to be updated to compare requested quantity against available quantity. If yes, place order, show custoemr total cost. if not send message "Insufficient quantity"
+//     .then(function(answer) {
+//       var query = "SELECT position, song, year FROM top5000 WHERE ?";
+//       connection.query(query, { artist: answer.artist }, function(err, res) {
+//         for (var i = 0; i < res.length; i++) {
+//           console.log("Position: " + res[i].position + " || Song: " + res[i].song + " || Year: " + res[i].year);
+//         }
+//         runSearch();
+//       });
+//     });
+// }
 

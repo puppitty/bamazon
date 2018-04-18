@@ -47,9 +47,10 @@ function prompt() {
     },
     ])
     // Then needs to be updated to compare requested quantity against available quantity. If yes, place order, show custoemr total cost. if not send message "Insufficient quantity"
+
     .then(function(answer) {
-      var query = "SELECT position, song, year FROM top5000 WHERE ?";
-      connection.query(query, { artist: answer.artist }, function(err, res) {
+      var query = "SELECT itemID, stock_qty FROM products WHERE ?";
+      connection.query(query, { itemID: answer.inputID }, function(err, res) {
         for (var i = 0; i < res.length; i++) {
           console.log("Position: " + res[i].position + " || Song: " + res[i].song + " || Year: " + res[i].year);
         }
