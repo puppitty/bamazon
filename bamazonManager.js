@@ -1,7 +1,9 @@
 /* Require MySQL & Inquirer */
 var inquirer = require("inquirer");
 var mysql = require("mysql");
+var Table = require('cli-table');
 
+var displayTable = require("./tableBuilder.js")
 
 /* Create a connection to the DB */
 var connection = mysql.createConnection({
@@ -19,7 +21,7 @@ var connection = mysql.createConnection({
 connection.connect(function (err) {
   if (err) throw err;
   console.log("connected as id " + connection.threadId + "\n");
-  start();
+  prompt();
 });
 
 // Manager version shows options with Switch / Case solutions for
@@ -27,7 +29,7 @@ connection.connect(function (err) {
 // View Low Inventory
 // Add to inventory
 // Add New Product
-function start() {
+var prompt = function () {
   inquirer
     .prompt({
       name: "action",
@@ -40,46 +42,48 @@ function start() {
         "Add New Product"
       ]
     })
-    .then(function(answer) {
+    .then(function (answer) {
       switch (answer.action) {
-      case "View Products for Sale":
-        viewInv();
-        break;
+        case "View Products for Sale":
+          viewInv();
+          break;
 
-      case "View Low Inventory":
-        lowInv();
-        
-        break;
+        case "View Low Inventory":
+          lowInv();
 
-      case "Add to Inventory":
-        addQty();
-        break;
+          break;
 
-      case "Add New Product":
-        newProduct();
-        break;
+        case "Add to Inventory":
+          addQty();
+          break;
+
+        case "Add New Product":
+          newProduct();
+          break;
       }
     });
 }
-
 // View Inventory Function
-function viewInv() {
+
+var viewInv = function () {
+  var display = new displayTable();
   connection.query("SELECT * FROM bamazon_db.products;", function (err, res) {
     if (err) throw err;
-    console.log(res);
+    display.displayInventoryTable(res)
     prompt();
   });
-};
+}
+
 
 // Display Low Inventory items
 // SELECT * FROM bamazon_db.products WHERE stock_qty <10;
 // Needs to list all items with inventory count lower than 5
 function lowInv() {
-connection.query("SELECT * FROM bamazon_db.products WHERE parse.int(stock_qty) <10", function (err, res) {
-  if (err) throw err;
-  console.log(res);
-  prompt();
-});
+  connection.query("SELECT * FROM bamazon_db.products WHERE parse.int(stock_qty) <10", function (err, res) {
+    if (err) throw err;
+    console.log(res);
+    prompt();
+  });
 }
 
 // Add Quantity (Needs to be updated)
@@ -134,4 +138,3 @@ function newProduct() {
 //       });
 //     });
 // }
-
