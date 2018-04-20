@@ -93,8 +93,8 @@ function lowInv() {
 // Prompt additional quantity
 // update database with new quantity (Look at ice cream app)
 function addQty() {
-  connection.query("SELECT * FROM products;", function (err, res) {
-    if (err) throw err;
+  // connection.query("SELECT * FROM products;", function (err, res) {
+  //   if (err) throw err;
     inquirer.prompt([{
       name: "inputId",
       type: "input",
@@ -105,12 +105,13 @@ function addQty() {
       type: "input",
       message: " Enter quantity you wish to add: ",
 
-    }]).then(function (answer) {
+    }]).then(function(answer) {
 
-      connection.query('SELECT * FROM products WHERE ?', {
-        itemId: answer.id
+      connection.query("SELECT itemId, product_name, stock_qty, price FROM products WHERE ?", {
+        itemId: answer.inputId
       }, function (err, res) {
-        itemQuantity = res[0].stock_qty + parseInt(answer.quantity);
+        
+        itemQuantity = parseInt(res[0].stock_qty) + parseInt(answer.quantity);
 
         connection.query("UPDATE products SET ? WHERE ?", [{
           stock_qty: itemQuantity
@@ -119,9 +120,11 @@ function addQty() {
         }], function (err, res) {});
 
         connection.query('SELECT * FROM products WHERE ?', {
-          ItemID: answer.id
+          ItemID: answer.inputId
         }, function (err, res) {
           console.log('\n The Stock Quantity was updated- see Inventory Table\n');
+      //  res is empty at this point so table not showing updated item.
+          console.log(res);
           displayMgr(res);
           // promptManager();
           prompt();
@@ -132,8 +135,8 @@ function addQty() {
 
     // console.log(res);
     // prompt();
-  });
-};
+  };
+;
 
 // Add New item (Needs to be updated)
 // Request item #
