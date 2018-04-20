@@ -67,7 +67,7 @@ var prompt = function () {
 
 var viewInv = function () {
   var display = new displayTable();
-  connection.query("SELECT * FROM bamazon_db.products;", function (err, res) {
+  connection.query("SELECT * FROM products;", function (err, res) {
     if (err) throw err;
     display.displayInventoryTable(res)
     prompt();
@@ -79,7 +79,7 @@ var viewInv = function () {
 // SELECT * FROM bamazon_db.products WHERE stock_qty <10;
 // Needs to list all items with inventory count lower than 5
 function lowInv() {
-  connection.query("SELECT * FROM products WHERE stock_qty <5", function (err, res) {
+  connection.query("SELECT * FROM products WHERE stock_qty < 5", function (err, res) {
     if (err) throw err;
     console.log("\n Products with inventory less than 5:\n")
     displayMgr(res);
@@ -93,10 +93,45 @@ function lowInv() {
 // Prompt additional quantity
 // update database with new quantity (Look at ice cream app)
 function addQty() {
-  connection.query("SELECT * FROM bamazon_db.products;", function (err, res) {
+  connection.query("SELECT * FROM products;", function (err, res) {
     if (err) throw err;
-    console.log(res);
-    prompt();
+    inquirer.prompt([{
+      name: "inputId",
+      type: "input",
+      message: " Enter the Item ID: ",
+
+    }, {
+      name: "quantity",
+      type: "input",
+      message: " Enter quantity you wish to add: ",
+
+    }]).then(function (answer) {
+
+      connection.query('SELECT * FROM products WHERE ?', {
+        itemId: answer.id
+      }, function (err, res) {
+        itemQuantity = res[0].stock_qty + parseInt(answer.quantity);
+
+        connection.query("UPDATE products SET ? WHERE ?", [{
+          stock_qty: itemQuantity
+        }, {
+          itemId: answer.id
+        }], function (err, res) {});
+
+        connection.query('SELECT * FROM products WHERE ?', {
+          ItemID: answer.id
+        }, function (err, res) {
+          console.log('\n The Stock Quantity was updated- see Inventory Table\n');
+          displayMgr(res);
+          // promptManager();
+          prompt();
+        });
+
+      });
+    });
+
+    // console.log(res);
+    // prompt();
   });
 };
 
@@ -107,14 +142,45 @@ function addQty() {
 // Prompt for inventory
 // update database with new product (Look at ice cream app)
 function newProduct() {
-  connection.query("SELECT * FROM bamazon_db.products;", function (err, res) {
-    if (err) throw err;
-    console.log(res);
-    prompt();
-  });
-};
+  inquirer.prompt([{
+    name: "productName",
+    type: "input",
+    message: " Enter the product name: ",
+}, {
+    name: "deptName",
+    type: "input",
+    message: " Enter the department name: ",
+}, {
+    name: "price",
+    type: "input",
+    message: " Enter the selling price: ",
+}, {
+    name: "quantity",
+    type: "input",
+    message: " Enter the quantity: ",                
+}]).then(function(answer) {
+    connection.query("INSERT INTO products SET ?", {
+        product_name: answer.productName,
+        dept_name: answer.deptName,
+        price: answer.price,
+        stock_qty: answer.quantity
+    }, function(err, res) {
+        console.log('\n  The new product was added - See the Inventory Table\n');
+            connection.query('SELECT * FROM products', function(err, results){  
+                displayMgr(results);
+                prompt();
+            });               
+    }); 
+});
+} 
+//   connection.query("SELECT * FROM bamazon_db.products;", function (err, res) {
+//     if (err) throw err;
+//     console.log(res);
+//     prompt();
+//   });
+// };
 
-var displayMgr = function(res) {   
+var displayMgr = function (res) {
   var display = new displayTable();
   display.displayInventoryTable(res);
 }
