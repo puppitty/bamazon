@@ -79,9 +79,11 @@ var viewInv = function () {
 // SELECT * FROM bamazon_db.products WHERE stock_qty <10;
 // Needs to list all items with inventory count lower than 5
 function lowInv() {
-  connection.query("SELECT * FROM bamazon_db.products WHERE parse.int(stock_qty) <10", function (err, res) {
+  connection.query("SELECT * FROM products WHERE stock_qty <5", function (err, res) {
     if (err) throw err;
-    console.log(res);
+    console.log("\n Products with inventory less than 5:\n")
+    displayMgr(res);
+    // console.log(res);
     prompt();
   });
 }
@@ -112,6 +114,10 @@ function newProduct() {
   });
 };
 
+var displayMgr = function(res) {   
+  var display = new displayTable();
+  display.displayInventoryTable(res);
+}
 // Rest of code needs updating
 
 // function prompt() {
