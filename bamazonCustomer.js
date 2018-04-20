@@ -1,8 +1,11 @@
 /* PSUEDOCODE */
 
-/* Require MySQL & Inquirer */
+/* Require MySQL, Inquirer, Cli-table */
 var inquirer = require("inquirer");
 var mysql = require("mysql");
+var Table = require('cli-table');
+
+var displayTable = require("./tableBuilder.js")
 
 
 /* Create a connection to the DB */
@@ -17,69 +20,92 @@ var connection = mysql.createConnection({
   password: "terabyte55",
   database: "bamazon_Db"
 });
-
+// Connect to the database
 connection.connect(function (err) {
   if (err) throw err;
   console.log("connected as id " + connection.threadId + "\n");
   start();
 });
 
-// Print out inventory
-function start() {
+// Display inventory in table
+var start = function () {
+  var display = new displayTable();
   connection.query("SELECT * FROM bamazon_db.products;", function (err, res) {
     if (err) throw err;
-    console.log(res);
+    display.displayInventoryTable(res)
     prompt();
   });
 }
 
-function prompt() {
-  inquirer
-    .prompt([{
-      name: "inputID",
-      type: "input",
-      message: "Please enter the Item ID"
-      // Validate ID sample code
-  //     if exists (SELECT itemId FROM products WHERE key = 'inputID')
-  //     PRINT 'Found it!'
-  // ELSE
-  //     PRINT 'Cannot find it!'
-
-//       try
-// {
-//     // Your coding logic
-// }
-// catch (SqlException ex)
-// {
-//     if (ex.Number.Equals(2627))
-//     {
-//           // Display here Primary Key duplicate error
-//           lblError.Text = "Duplicate Number! Try Different";
-//     }
-// }
-    },
-    {
-      name: "quantity",
-      type: "input",
-      message: "How many units would you like to buy?"
-    },
+// Ask Custimer what they want to purchase and how many
+var prompt = function () {
+  inquirer.prompt([{
+        name: "inputID",
+        type: "input",
+        message: "Please enter the Item ID",
+      },
+      {
+        name: "quantity",
+        type: "input",
+        message: "How many units would you like to buy?",
+      }
     ])
+
     // Then needs to be updated to compare requested quantity against available quantity. If yes, place order, show custoemr total cost. if not send message "Insufficient quantity"
 
-    .then(function(answer) {
-      var query = "SELECT itemId, stock_qty FROM products WHERE ?";
-      connection.query(query, { itemID: answer.inputID }, function(err, res) {
-        for (var i = 0; i < res.length; i++) {
-          console.log("Position: " + res[i].position + " || Song: " + res[i].song + " || Year: " + res[i].year);
-        }
+    .then(function (answer) {
 
-          // if exists (SELECT itemId FROM products WHERE key = 'inputID')
-  //     PRINT 'Found it!'
-  // ELSE
-  //     PRINT 'Cannot find it!'
-        runSearch();
-      });
+      connection.query("SELECT itemId, product_name, stock_qty, price FROM products WHERE ?", {
+          itemId: answer.inputID
+        },
+        // Display purchase choice
+        function (err, res) {
+          if (err) throw err;
+          console.log(res);
+          console.log("\n You would like to buy " + answer.quantity + " " +  res[0].product_name + ": " + " at $" + res[0].price + " each");
+
+          // Check to see if there is enough inventory
+          if (res[0].stock_qty >= answer.quantity) {
+
+            // There is enough inventory
+            var remainingQty = res[0].stock_qty - answer.quantity;
+            connection.query("UPDATE products SET ? WHERE?", [{
+                stock_qty: remainingQty
+              }, {
+                itemId: answer.inputID
+              }],
+              function (err, res) {});
+
+            // Calculate total cost
+            var cost = res[0].price * answer.quantity;
+            console.log("\n Order complete!  Your total is $ " + cost.toFixed(2) + "\n");
+            contPrompt();
+          } else {
+            // Not enough inventory
+            console.log("\n Sorry, there is not enough inventory to fulfill your order! \n");
+            contPrompt();
+          }
+        })
     });
 }
 
+// Continue Shopping?
+var contPrompt = function () {
+  inquirer.prompt({
+    name: "continue",
+    type: "list",
+    message: "\n Would you like to continue shopping?",
+    choices: ["Yes", "No"]
+  }).then(function (answer) {
+    switch (answer.continue) {
+      case 'Yes':
+        prompt();
+        break;
+      case 'No':
+        connection.end();
+        break;
+    }
+  })
+};
 
+// prompt();
