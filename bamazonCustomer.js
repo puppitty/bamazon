@@ -55,31 +55,41 @@ var prompt = function () {
 
     .then(function (answer) {
 
-      connection.query("SELECT itemId, product_name, stock_qty, price FROM products WHERE ?", {
+      connection.query("SELECT itemId, product_name, stock_qty, price, product_sales FROM products WHERE ?", {
           itemId: answer.inputID
         },
         // Display purchase choice
         function (err, res) {
           if (err) throw err;
-          console.log(res);
-          console.log("\n You would like to buy " + answer.quantity + " " +  res[0].product_name + ": " + " at $" + res[0].price + " each");
+          // console.log(res);
+          console.log("\n You would like to buy " + answer.quantity + " " + res[0].product_name + ": " + " at $" + res[0].price + " each");
 
           // Check to see if there is enough inventory
           if (res[0].stock_qty >= answer.quantity) {
 
             // There is enough inventory
             var remainingQty = res[0].stock_qty - answer.quantity;
-            connection.query("UPDATE products SET ? WHERE?", [{
-                stock_qty: remainingQty
-              }, {
-                itemId: answer.inputID
-              }],
-              function (err, res) {});
 
             // Calculate total cost
             var cost = res[0].price * answer.quantity;
             console.log("\n Order complete!  Your total is $ " + cost.toFixed(2) + "\n");
+
+            // Add to product_sales and update record
+            // product total not working
+        
+            var product_total = parseInt(res[0].product_sales) + cost;
+            console.log("Total Sales: " + product_total);
+            connection.query("UPDATE products SET ? WHERE?", [{
+              stock_qty: remainingQty
+            }, {
+              itemId: answer.inputID
+            }, {
+              product_sales: product_total
+            }],
+            function (err, res) {});
+            console.log(product_total);
             contPrompt();
+
           } else {
             // Not enough inventory
             console.log("\n Sorry, there is not enough inventory to fulfill your order! \n");
