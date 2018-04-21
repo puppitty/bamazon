@@ -74,17 +74,15 @@ var prompt = function () {
             var cost = res[0].price * answer.quantity;
             console.log("\n Order complete!  Your total is $ " + cost.toFixed(2) + "\n");
 
-            // Add to product_sales and update record
-            // product total not working
-        
+            // Add to product_sales and update record     
             var product_total = parseInt(res[0].product_sales) + cost;
             console.log("Total Sales: " + product_total);
-            connection.query("UPDATE products SET ? WHERE?", [{
-              stock_qty: remainingQty
-            }, {
-              itemId: answer.inputID
-            }, {
+            connection.query("UPDATE products SET ? WHERE ?", [{
+              stock_qty: remainingQty,
               product_sales: product_total
+            },
+            {
+              itemId: answer.inputID
             }],
             function (err, res) {});
             console.log(product_total);
@@ -117,5 +115,3 @@ var contPrompt = function () {
     }
   })
 };
-
-// prompt();
