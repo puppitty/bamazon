@@ -1,7 +1,7 @@
 /* Require MySQL & Inquirer */
 var inquirer = require("inquirer");
 var mysql = require("mysql");
-var Table = require('cli-table');
+var superTable = require('cli-table');
 
 // Need to use join command. Might need to include table builder within this file.
 
@@ -26,11 +26,7 @@ connection.connect(function (err) {
   prompt();
 });
 
-// Manager version shows options with Switch / Case solutions for
-// View Products for Sale
-// View Low Inventory
-// Add to inventory
-// Add New Product
+// Supervisor questions 
 var prompt = function () {
   inquirer
     .prompt({
@@ -39,6 +35,7 @@ var prompt = function () {
       message: "What would you like to do?",
       choices: [
         "View Products Sales by Department",
+        new inquirer.Separator("=================================="),
         "Add New Department"
       ]
     })
@@ -49,7 +46,7 @@ var prompt = function () {
           break;
 
         case "Add New Department":
-          newProduct();
+          newDept();
           break;
       }
     });
@@ -67,13 +64,9 @@ var viewDept = function () {
 
 
 
-// Add New item (Needs to be updated)
-// Request item #
-// Prompt for name of product
-// Prompt for Department
-// Prompt for inventory
-// update database with new product (Look at ice cream app)
-function newProduct() {
+// Add New department (Not getting to database)
+
+function newDept() {
   inquirer.prompt([{
     name: "deptName",
     type: "input",
@@ -84,14 +77,16 @@ function newProduct() {
     message: " Enter Overhead Costs: ",
 
   }]).then(function (answer) {
-    connection.query("INSERT INTO products SET ?", {
+    connection.query("INSERT INTO departments SET ?", {
       dept_name: answer.deptName,
       overheadcost: answer.overhead,
 
     }, function (err, res) {
-      console.log('\n  The new Department was added - See the Inventory Table\n');
+
       connection.query('SELECT * FROM departments', function (err, results) {
-        displayMgr(results);
+        
+        console.log('\n  The new Department was added.');
+        // displaySuper(results);
         prompt();
       });
     });
@@ -104,7 +99,7 @@ function newProduct() {
 //   });
 // };
 
-var displayMgr = function (res) {
+var displaySuper = function (res) {
   var display = new displaySuper();
   display.displaySuperTable(res);
 }

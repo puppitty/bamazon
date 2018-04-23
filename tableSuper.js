@@ -2,7 +2,7 @@
 Table = require('cli-table');
 var displaySuper = function() {
 
-    this.table = new Table({
+    this.table = new superTable({
         head: ['Dept ID', 'Department Name', 'Overhead Costs', 'Product Sales', "Total Profit"],
     });
 
@@ -10,7 +10,7 @@ var displaySuper = function() {
     	this.res = res;
 	    for (var i=0; i <this.res.length; i++) {
 	        this.table.push(
-	            [this.res[i].deptId, this.res[i].dept_name, '$'+ this.res[i].overheadcost] );
+	            [this.res[i].itemId, this.res[i].dept_name, '$'+ this.res[i].overheadcost] );
 	    }
     	console.log('\n' + this.table.toString());
 	};
