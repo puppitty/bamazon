@@ -1,9 +1,36 @@
 # bamazon
 
-Left to do:
+Description:
 
-1. Add NaN checks and verify information.
-2. Add comments
-3. Create proper readme file with directions on how to use each file.
-4. Do screen captures for each screen.
-5. Update database files
+This program contains two different modules. One for the cusotmer and the other for the manager.  It uses node.js and MySQL database.
+
+Customer module lists the inventory for sale including product name, price and quantity available.
+
+![./gifs/Customer.gif]
+
+Order Inventory:
+![./gifs/Customer_Purchase.gif]
+
+Not enough Inventory:
+![./gifs/Customer_Order_noInv]
+
+The Manager Module allows you to View the available inventory, View low inventory with less than 5 pieces in inventory, add more quantity and add new products.
+
+For the Manager Module:
+![./gifs/Manager_Choices.gif]
+
+To view the inventory:
+![./gifs/Mgr_View_Inv.gif]
+
+To view low inventory:
+![./gifs/Mgr_Low_Inv.gif]
+
+To add quantity to inventory:
+![./gifs/Mgr_Add_Inv.gif]
+
+To add new products to inventory:
+![./gifs/Mgr_Add_Product.gif]
+
+
+
+
