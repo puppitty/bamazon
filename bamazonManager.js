@@ -117,10 +117,11 @@ function addQty() {
 
       // Add new inventory to existing inventory
       itemQuantity = parseInt(res[0].stock_qty) + parseInt(answer.quantity);
+
       connection.query("UPDATE products SET ? WHERE ?", [{
         stock_qty: itemQuantity
       }, {
-        itemId: answer.id
+        itemId: answer.inputId
       }], function (err, res) {});
 
       connection.query('SELECT * FROM products WHERE ?', {
