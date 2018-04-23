@@ -56,12 +56,14 @@ var prompt = function () {
     .then(function (answer) {
 
       connection.query("SELECT itemId, product_name, stock_qty, price, product_sales FROM products WHERE ?", {
+        // Validate itemID here
           itemId: answer.inputID
         },
         // Display purchase choice
         function (err, res) {
           if (err) throw err;
           
+          // validate quantity is  a number
           console.log("\n You would like to buy " + answer.quantity + " " + res[0].product_name + ": " + " at $" + res[0].price + " each");
 
           // Check to see if there is enough inventory
