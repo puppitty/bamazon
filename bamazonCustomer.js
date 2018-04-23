@@ -37,7 +37,7 @@ var start = function () {
   });
 }
 
-// Ask Custimer what they want to purchase and how many
+// Ask Customer what they want to purchase and how many
 var prompt = function () {
   inquirer.prompt([{
         name: "inputID",
@@ -51,7 +51,7 @@ var prompt = function () {
       }
     ])
 
-    // Then needs to be updated to compare requested quantity against available quantity. If yes, place order, show custoemr total cost. if not send message "Insufficient quantity"
+    // Then needs to be updated to compare requested quantity against available quantity. If yes, place order, show customer total cost. if not send message "Insufficient quantity"
 
     .then(function (answer) {
 
@@ -61,7 +61,7 @@ var prompt = function () {
         // Display purchase choice
         function (err, res) {
           if (err) throw err;
-          // console.log(res);
+          
           console.log("\n You would like to buy " + answer.quantity + " " + res[0].product_name + ": " + " at $" + res[0].price + " each");
 
           // Check to see if there is enough inventory
@@ -76,7 +76,7 @@ var prompt = function () {
 
             // Add to product_sales and update record     
             var product_total = parseInt(res[0].product_sales) + cost;
-            console.log("Total Sales: " + product_total);
+                   
             connection.query("UPDATE products SET ? WHERE ?", [{
               stock_qty: remainingQty,
               product_sales: product_total
@@ -84,8 +84,7 @@ var prompt = function () {
             {
               itemId: answer.inputID
             }],
-            function (err, res) {});
-            console.log(product_total);
+            function (err, res) {});          
             contPrompt();
 
           } else {

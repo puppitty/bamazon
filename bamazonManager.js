@@ -34,12 +34,16 @@ var prompt = function () {
     .prompt({
       name: "action",
       type: "list",
-      message: "What would you like to do?",
+      message: "What would you like to do?\n",
       choices: [
         "View Products for Sale",
+        new inquirer.Separator("=================================="),
         "View Low Inventory",
+        new inquirer.Separator("=================================="),
         "Add to Inventory",
-        "Add New Product"
+        new inquirer.Separator("=================================="),
+        "Add New Product",
+        new inquirer.Separator("==================================")
       ]
     })
     .then(function (answer) {
@@ -83,133 +87,95 @@ function lowInv() {
     if (err) throw err;
     console.log("\n Products with inventory less than 5:\n")
     displayMgr(res);
-    // console.log(res);
+
     prompt();
   });
 }
 
-// Add Quantity (Needs to be updated)
+// Add Quantity
 // Request item #
 // Prompt additional quantity
-// update database with new quantity (Look at ice cream app)
+// update database with new quantity 
 function addQty() {
-  // connection.query("SELECT * FROM products;", function (err, res) {
-  //   if (err) throw err;
-    inquirer.prompt([{
-      name: "inputId",
-      type: "input",
-      message: " Enter the Item ID: ",
+  // Ask Item ID
+  inquirer.prompt([{
+    name: "inputId",
+    type: "input",
+    message: " Enter the Item ID: ",
+    // Ask quantity to be added
+  }, {
+    name: "quantity",
+    type: "input",
+    message: " Enter quantity you wish to add: ",
 
-    }, {
-      name: "quantity",
-      type: "input",
-      message: " Enter quantity you wish to add: ",
+  }]).then(function (answer) {
 
-    }]).then(function(answer) {
+    // Update database, find correct item
+    connection.query("SELECT itemId, product_name, stock_qty, price FROM products WHERE ?", {
+      itemId: answer.inputId
+    }, function (err, res) {
 
-      connection.query("SELECT itemId, product_name, stock_qty, price FROM products WHERE ?", {
-        itemId: answer.inputId
+      // Add new inventory to existing inventory
+      itemQuantity = parseInt(res[0].stock_qty) + parseInt(answer.quantity);
+      connection.query("UPDATE products SET ? WHERE ?", [{
+        stock_qty: itemQuantity
+      }, {
+        itemId: answer.id
+      }], function (err, res) {});
+
+      connection.query('SELECT * FROM products WHERE ?', {
+        ItemID: answer.inputId
       }, function (err, res) {
-        
-        itemQuantity = parseInt(res[0].stock_qty) + parseInt(answer.quantity);
+        console.log('\n The Stock Quantity was updated');
+        // Dispaly updated inventory
+        displayMgr(res);
 
-        connection.query("UPDATE products SET ? WHERE ?", [{
-          stock_qty: itemQuantity
-        }, {
-          itemId: answer.id
-        }], function (err, res) {});
-
-        connection.query('SELECT * FROM products WHERE ?', {
-          ItemID: answer.inputId
-        }, function (err, res) {
-          console.log('\n The Stock Quantity was updated- see Inventory Table\n');
-      //  res is empty at this point so table not showing updated item.
-          console.log(res);
-          displayMgr(res);
-          // promptManager();
-          prompt();
-        });
-
+        prompt();
       });
+
     });
+  });
+};;
 
-    // console.log(res);
-    // prompt();
-  };
-;
+// Add New inventory item
 
-// Add New item (Needs to be updated)
-// Request item #
-// Prompt for name of product
-// Prompt for Department
-// Prompt for inventory
-// update database with new product (Look at ice cream app)
 function newProduct() {
   inquirer.prompt([{
     name: "productName",
     type: "input",
     message: " Enter the product name: ",
-}, {
+  }, {
     name: "deptName",
     type: "input",
     message: " Enter the department name: ",
-}, {
+  }, {
     name: "price",
     type: "input",
     message: " Enter the selling price: ",
-}, {
+  }, {
     name: "quantity",
     type: "input",
-    message: " Enter the quantity: ",                
-}]).then(function(answer) {
-    connection.query("INSERT INTO products SET ?", {
-        product_name: answer.productName,
-        dept_name: answer.deptName,
-        price: answer.price,
-        stock_qty: answer.quantity
-    }, function(err, res) {
-        console.log('\n  The new product was added - See the Inventory Table\n');
-            connection.query('SELECT * FROM products', function(err, results){  
-                displayMgr(results);
-                prompt();
-            });               
-    }); 
-});
-} 
-//   connection.query("SELECT * FROM bamazon_db.products;", function (err, res) {
-//     if (err) throw err;
-//     console.log(res);
-//     prompt();
-//   });
-// };
+    message: " Enter the quantity: ",
 
+    // Update database
+  }]).then(function (answer) {
+    connection.query("INSERT INTO products SET ?", {
+      product_name: answer.productName,
+      dept_name: answer.deptName,
+      price: answer.price,
+      stock_qty: answer.quantity
+    }, function (err, res) {
+      console.log('\n  The new product was added');
+      connection.query('SELECT * FROM products', function (err, results) {
+        // Display updated Inventory table
+        displayMgr(results);
+        prompt();
+      });
+    });
+  });
+}
+// Display inventory table 
 var displayMgr = function (res) {
   var display = new displayTable();
   display.displayInventoryTable(res);
 }
-// Rest of code needs updating
-
-// function prompt() {
-//   inquirer
-//     .prompt([{
-//       name: "inputID",
-//       type: "input",
-//       message: "Please enter the Item ID"
-//     },
-//     {
-//       name: "quantity",
-//       type: "input",
-//       message: "How many units would you like to buy?"
-//     },
-//     ])
-//     // Then needs to be updated to compare requested quantity against available quantity. If yes, place order, show custoemr total cost. if not send message "Insufficient quantity"
-//     .then(function(answer) {
-//       var query = "SELECT position, song, year FROM top5000 WHERE ?";
-//       connection.query(query, { artist: answer.artist }, function(err, res) {
-//         for (var i = 0; i < res.length; i++) {
-//           console.log("Position: " + res[i].position + " || Song: " + res[i].song + " || Year: " + res[i].year);
-//         }
-//         runSearch();
-//       });
-//     });
-// }
