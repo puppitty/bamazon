@@ -29,7 +29,7 @@ To add quantity to inventory:
 ![bamazon/gifs/Mgr_Add_Inv.gif]
 
 To add new products to inventory:
-![bamazon/gifs/Mgr_Add_Product.gif]
+bamazon/gifs/Mgr_Add_Product.gif
 
 
 
