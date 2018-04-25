@@ -52,6 +52,7 @@ var prompt = function () {
     });
 }
 // View Inventory Function
+// Not working - check code
 
 var viewDept = function () {
   var display = new displaySuper();

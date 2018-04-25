@@ -1,5 +1,5 @@
-// Displays Inventory Table for bamazon js programs
-Table = require('cli-table');
+// Displays Inventory Table for bamazon js programs for Supervisor
+superTable = require('cli-table');
 var displaySuper = function() {
 
     this.table = new superTable({

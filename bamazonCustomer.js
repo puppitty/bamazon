@@ -51,7 +51,8 @@ var prompt = function () {
       }
     ])
 
-    // Then needs to be updated to compare requested quantity against available quantity. If yes, place order, show customer total cost. if not send message "Insufficient quantity"
+    // Check valid inputID and quantity
+    // If enough inventory, places order and shows customer total cost. If not send message "Insufficient quantity"
 
     .then(function (answer) {
 

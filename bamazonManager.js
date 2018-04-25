@@ -111,6 +111,7 @@ function addQty() {
   }]).then(function (answer) {
 
     // Update database, find correct item
+    // check valid itemid and quantity is a number. If not send back to enter correctly.
     connection.query("SELECT itemId, product_name, stock_qty, price FROM products WHERE ?", {
       itemId: answer.inputId
     }, function (err, res) {
@@ -160,6 +161,7 @@ function newProduct() {
 
     // Update database
   }]).then(function (answer) {
+    // Validate price and quantity are numbers
     connection.query("INSERT INTO products SET ?", {
       product_name: answer.productName,
       dept_name: answer.deptName,
